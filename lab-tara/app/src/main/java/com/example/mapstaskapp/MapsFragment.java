@@ -48,9 +48,19 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
     private int LOCATION_REFRESH_TIME = 1;
     private int LOCATION_REFRESH_DISTANCE = 1;
 
+    private String databaseKey;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle bundle) {
         View view = inflater.inflate(R.layout.activity_maps, container, false);
+
+        Intent data = getActivity().getIntent();
+        Bundle arguments = getArguments();
+        if (data != null && data.hasExtra("key")) {
+            databaseKey = data.getStringExtra("key");
+        } else if (arguments != null && arguments.containsKey("key")) {
+            databaseKey = arguments.getString("key");
+        }
 
         ButterKnife.bind(this, view);
 
@@ -108,12 +118,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-        final Intent data = getActivity().getIntent();
-        if (data == null || !data.hasExtra("id")) {
+        if (databaseKey == null) {
             return;
         }
 
-        FirebaseDatabase.getInstance().getReference("errands").child(data.getStringExtra("id"))    .addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference("errands").child(databaseKey).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Errand errand = Errand.fromSnapshot(dataSnapshot);
