@@ -1,6 +1,7 @@
 package com.example.mapstaskapp;
 
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,9 +26,12 @@ import butterknife.ButterKnife;
 
 public class ErrandListFragment
         extends Fragment implements ValueEventListener {
-    @BindView(R.id.errands)RecyclerView recyclerView;
+    @BindView(R.id.errands)
+    RecyclerView recyclerView;
     LinearLayoutManager linearLayoutManager;
     ErrandAdapter errandAdapter;
+
+    private boolean isTwoPane;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -37,6 +41,17 @@ public class ErrandListFragment
 
         DatabaseReference errands = FirebaseDatabase.getInstance().getReference("errands");
         errands.addValueEventListener(this);
+
+        isTwoPane = false;
+        if (view.findViewById(R.id.detail_fragment_container) != null) {
+            isTwoPane = true;
+
+            Fragment fragment = new MapsFragment();
+            FragmentManager fm = getChildFragmentManager();
+            fm.beginTransaction()
+                    .add(R.id.detail_fragment_container, fragment)
+                    .commit();
+        }
 
         linearLayoutManager = new LinearLayoutManager(getActivity());
         errandAdapter = new ErrandAdapter();

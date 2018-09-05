@@ -59,11 +59,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        checkPermisssions();
+        checkPermissions();
         return view;
     }
 
-    private void checkPermisssions() {
+    private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             initializeLocationListener();
         } else {
@@ -109,6 +109,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Locati
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         final Intent data = getActivity().getIntent();
+        if (data == null || !data.hasExtra("id")) {
+            return;
+        }
+
         FirebaseDatabase.getInstance().getReference("errands").child(data.getStringExtra("id"))    .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
