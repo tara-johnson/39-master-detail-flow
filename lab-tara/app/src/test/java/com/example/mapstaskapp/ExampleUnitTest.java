@@ -1,4 +1,4 @@
-package com.example.masterdetailflow;
+package com.example.mapstaskapp;
 
 import org.junit.Test;
 
